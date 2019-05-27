@@ -10,6 +10,8 @@ use DateTime;
  */
 class VerificationCode
 {
+    /** @var string Prefix */
+    protected $prefix;
     /** @var string Code */
     protected $code;
     /** @var integer Attempts */
@@ -19,13 +21,32 @@ class VerificationCode
 
     public function __construct()
     {
+        $this->prefix = '';
         $this->attempts = 0;
     }
 
     /**
      * @return string
      */
-    public function getCode(): ?string
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * @param string $prefix
+     * @return VerificationCode
+     */
+    public function setPrefix($prefix): VerificationCode
+    {
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -43,7 +64,7 @@ class VerificationCode
     /**
      * @return int
      */
-    public function getAttempts(): ?int
+    public function getAttempts(): int
     {
         return $this->attempts;
     }
@@ -61,7 +82,7 @@ class VerificationCode
     /**
      * @return DateTime
      */
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }

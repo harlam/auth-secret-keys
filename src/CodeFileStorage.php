@@ -1,8 +1,9 @@
 <?php
 
-namespace harlam\Security\Interfaces;
+namespace harlam\Security;
 
 use harlam\Security\Entity\VerificationCode;
+use harlam\Security\Interfaces\CodeStorageInterface;
 use RuntimeException;
 
 class CodeFileStorage implements CodeStorageInterface
@@ -18,20 +19,32 @@ class CodeFileStorage implements CodeStorageInterface
         }
     }
 
-    public function find(string $uid): VerificationCode
+    public function find(string $code, string $prefix = ''): VerificationCode
     {
-        $data = file_get_contents($this->path . DIRECTORY_SEPARATOR . $uid);
+        $data = file_get_contents($this->path . DIRECTORY_SEPARATOR . $prefix . $code);
+        var_dump($data);
         return new VerificationCode();
     }
 
     public function create(VerificationCode $code): VerificationCode
     {
-        file_put_contents($this->path . DIRECTORY_SEPARATOR . md5($code->getCode()), json_encode($code));
-        return new VerificationCode();
+        $file = $this->path . DIRECTORY_SEPARATOR . $code->getPrefix() . $code->getCode();
+        $saved = file_put_contents($file, json_encode([
+            'prefix' => $code->getPrefix(),
+            'code' => $code->getCode(),
+            'attempts' => $code->getAttempts(),
+            'created' => $code->getCreatedAt()->format('Y-m-d H:i:s'),
+        ]));
+
+        if (!$saved) {
+            throw new RuntimeException("Save error");
+        }
+
+        return $code;
     }
 
-    public function delete(string $uid): bool
+    public function delete(string $code, string $prefix = ''): bool
     {
-        return unlink($this->path . DIRECTORY_SEPARATOR . md5($code->getCode()));
+        return unlink($this->path . DIRECTORY_SEPARATOR . $prefix . $code);
     }
 }
