@@ -1,0 +1,19 @@
+{
+    "name": "harlam/verification-codes",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nikolay Harlamov",
+            "email": "self@harlam.net"
+        }
+    ],
+    "require": {
+        "php": ">=7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "harlam\\Security\\": "src"
+        }
+    }
+}
