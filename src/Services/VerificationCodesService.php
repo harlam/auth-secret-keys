@@ -5,7 +5,7 @@ namespace harlam\Security\Services;
 use harlam\Security\Interfaces\CodeGeneratorInterface;
 use harlam\Security\Interfaces\CodeStorageInterface;
 
-class CodeGeneratorService
+class VerificationCodesService
 {
     protected $generator;
     protected $storage;
@@ -20,5 +20,15 @@ class CodeGeneratorService
     {
         $code = $this->generator->generate();
         $this->storage->create($code);
+    }
+
+    public function validate(string $code, string $prefix = ''): bool
+    {
+        $stored = $this->storage->find($code, $prefix);
+
+        if ($stored === null) {
+            // Code not found
+        }
+
     }
 }

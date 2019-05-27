@@ -2,6 +2,7 @@
 
 namespace harlam\Security;
 
+use RuntimeException;
 use harlam\Security\Entity\VerificationCode;
 use harlam\Security\Interfaces\CodeValidatorInterface;
 
@@ -18,6 +19,16 @@ class CodeValidator implements CodeValidatorInterface
 
     public function validate(VerificationCode $code): bool
     {
-        return false;
+        $lifetime = time() - $code->getCreatedAt()->getTimestamp();
+
+        if ($lifetime >= $this->maxLifetime) {
+            throw new RuntimeException("Время истекло");
+        }
+
+        if ($code->getAttempts() >= $this->maxAttempts) {
+            throw new RuntimeException("Превышено число попыток ввода");
+        }
+
+        return true;
     }
 }

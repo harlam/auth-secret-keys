@@ -11,9 +11,11 @@ use harlam\Security\Entity\VerificationCode;
  */
 interface CodeStorageInterface
 {
-    public function find(string $code, string $prefix = ''): VerificationCode;
+    public function find(string $code, string $prefix = ''): ?VerificationCode;
 
     public function create(VerificationCode $code): VerificationCode;
 
     public function delete(string $code, string $prefix = ''): bool;
+
+    public function getLast(string $prefix = ''): ?VerificationCode;
 }
