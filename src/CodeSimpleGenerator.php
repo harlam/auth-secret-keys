@@ -8,20 +8,27 @@ use harlam\Security\Interfaces\CodeGeneratorInterface;
 
 class CodeSimpleGenerator implements CodeGeneratorInterface
 {
-    protected $prefix = '';
+    protected $owner = '';
 
-    public function setPrefix(string $prefix): CodeGeneratorInterface
+    /**
+     * @param string $owner
+     * @return CodeGeneratorInterface
+     */
+    public function setOwner(string $owner): CodeGeneratorInterface
     {
-        $this->prefix = $prefix;
+        $this->owner = $owner;
         return $this;
     }
 
+    /**
+     * @return VerificationCode
+     */
     public function generate(): VerificationCode
     {
         $code = (string)random_int(100000, 999999);
 
         return (new VerificationCode())
-            ->setPrefix($this->prefix)
+            ->setOwner($this->owner)
             ->setCode($code)
             ->setCreatedAt(new DateTime());
     }

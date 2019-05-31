@@ -21,9 +21,9 @@ class CodeFileStorage implements CodeStorageInterface
         }
     }
 
-    public function find(string $code, string $prefix = ''): ?VerificationCode
+    public function find(string $owner, string $code): ?VerificationCode
     {
-        $file = $this->path . DIRECTORY_SEPARATOR . $prefix . $code;
+        $file = $this->path . DIRECTORY_SEPARATOR . $owner . $code;
 
         if (!file_exists($file)) {
             return null;
@@ -36,17 +36,21 @@ class CodeFileStorage implements CodeStorageInterface
         }
 
         return (new VerificationCode())
-            ->setPrefix($json->prefix)
+            ->setOwner($json->prefix)
             ->setCode($json->code)
             ->setAttempts($json->attempts)
             ->setCreatedAt(DateTime::createFromFormat('Y-m-d H:i:s', $json->created));
     }
 
+    /**
+     * @param VerificationCode $code
+     * @return VerificationCode
+     */
     public function create(VerificationCode $code): VerificationCode
     {
-        $file = $this->path . DIRECTORY_SEPARATOR . $code->getPrefix() . $code->getCode();
+        $file = $this->path . DIRECTORY_SEPARATOR . $code->getOwner() . $code->getCode();
         $saved = file_put_contents($file, json_encode([
-            'prefix' => $code->getPrefix(),
+            'owner' => $code->getOwner(),
             'code' => $code->getCode(),
             'attempts' => $code->getAttempts(),
             'created' => $code->getCreatedAt()->format('Y-m-d H:i:s'),
@@ -59,11 +63,20 @@ class CodeFileStorage implements CodeStorageInterface
         return $code;
     }
 
+    /**
+     * @param string $code
+     * @param string $prefix
+     * @return bool
+     */
     public function delete(string $code, string $prefix = ''): bool
     {
         return unlink($this->path . DIRECTORY_SEPARATOR . $prefix . $code);
     }
 
+    /**
+     * @param string $prefix
+     * @return VerificationCode|null
+     */
     public function getLast(string $prefix = ''): ?VerificationCode
     {
         $files = glob($this->path . DIRECTORY_SEPARATOR . $prefix . '*', SCANDIR_SORT_DESCENDING);

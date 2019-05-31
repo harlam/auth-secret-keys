@@ -10,8 +10,8 @@ use DateTime;
  */
 class VerificationCode
 {
-    /** @var string Prefix */
-    protected $prefix;
+    /** @var string Owner */
+    protected $owner;
     /** @var string Code */
     protected $code;
     /** @var integer Attempts */
@@ -21,25 +21,25 @@ class VerificationCode
 
     public function __construct()
     {
-        $this->prefix = '';
+        $this->owner = '';
         $this->attempts = 0;
     }
 
     /**
      * @return string
      */
-    public function getPrefix(): string
+    public function getOwner(): string
     {
-        return $this->prefix;
+        return $this->owner;
     }
 
     /**
-     * @param string $prefix
+     * @param string $owner
      * @return VerificationCode
      */
-    public function setPrefix($prefix): VerificationCode
+    public function setOwner(string $owner): VerificationCode
     {
-        $this->prefix = $prefix;
+        $this->owner = $owner;
         return $this;
     }
 
