@@ -1,28 +1,37 @@
 <?php
 
-namespace harlam\Security\Entity;
+namespace harlam\Security\Auth\Entity;
 
 use DateTime;
 
 /**
- * Class VerificationCode
- * @package harlam\Security
+ * Secret key entity
  */
-class VerificationCode
+class SecretKey
 {
+    /** @var mixed UID */
+    protected $uid;
     /** @var string Owner */
-    protected $owner;
+    protected $owner = '';
     /** @var string Code */
-    protected $code;
+    protected $key;
     /** @var integer Attempts */
-    protected $attempts;
+    protected $attempts = 0;
     /** @var DateTime Date/Time */
     protected $createdAt;
 
-    public function __construct()
+    /**
+     * @return mixed
+     */
+    public function getUid()
     {
-        $this->owner = '';
-        $this->attempts = 0;
+        return $this->uid;
+    }
+
+    public function setUid($uid): SecretKey
+    {
+        $this->uid = $uid;
+        return $this;
     }
 
     /**
@@ -35,9 +44,9 @@ class VerificationCode
 
     /**
      * @param string $owner
-     * @return VerificationCode
+     * @return SecretKey
      */
-    public function setOwner(string $owner): VerificationCode
+    public function setOwner(string $owner): SecretKey
     {
         $this->owner = $owner;
         return $this;
@@ -46,18 +55,18 @@ class VerificationCode
     /**
      * @return string
      */
-    public function getCode(): string
+    public function getKey(): string
     {
-        return $this->code;
+        return $this->key;
     }
 
     /**
-     * @param string $code
-     * @return VerificationCode
+     * @param string $key
+     * @return SecretKey
      */
-    public function setCode($code): VerificationCode
+    public function setKey($key): SecretKey
     {
-        $this->code = $code;
+        $this->key = $key;
         return $this;
     }
 
@@ -71,9 +80,9 @@ class VerificationCode
 
     /**
      * @param int $attempts
-     * @return VerificationCode
+     * @return SecretKey
      */
-    public function setAttempts(int $attempts): VerificationCode
+    public function setAttempts(int $attempts): SecretKey
     {
         $this->attempts = $attempts;
         return $this;
@@ -89,9 +98,9 @@ class VerificationCode
 
     /**
      * @param DateTime $createdAt
-     * @return VerificationCode
+     * @return SecretKey
      */
-    public function setCreatedAt(DateTime $createdAt): VerificationCode
+    public function setCreatedAt(DateTime $createdAt): SecretKey
     {
         $this->createdAt = $createdAt;
         return $this;
