@@ -4,10 +4,10 @@ namespace harlam\Security\Auth\Services;
 
 use harlam\Security\Auth\Entity\SecretKey;
 use harlam\Security\Auth\Exceptions\KeyValidationException;
+use harlam\Security\Auth\Exceptions\TooManyRequests;
 use harlam\Security\Auth\Interfaces\KeyGeneratorInterface;
 use harlam\Security\Auth\Interfaces\KeyStorageInterface;
 use harlam\Security\Auth\Interfaces\KeyValidatorInterface;
-use RuntimeException;
 
 /**
  * Class SecretKeysService
@@ -62,7 +62,7 @@ class SecretKeysService
             $lifetime = time() - $key->getCreatedAt()->getTimestamp();
 
             if ($lifetime < $this->requestTimeInterval) {
-                throw new RuntimeException();
+                throw new TooManyRequests();
             }
         }
     }
