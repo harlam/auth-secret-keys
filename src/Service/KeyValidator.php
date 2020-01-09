@@ -2,10 +2,10 @@
 
 namespace harlam\Security\Auth\Services;
 
-use harlam\Security\Auth\Entity\SecretKey;
+use harlam\Security\Auth\Entity\KeyEntity;
 use harlam\Security\Auth\Exceptions\KeyValidationException;
 use harlam\Security\Auth\Exceptions\ValidationLifetimeException;
-use harlam\Security\Auth\Exceptions\ValidationMaxAttemptsException;
+use harlam\Security\Auth\Exceptions\KeyAttemptsLimitException;
 use harlam\Security\Auth\Interfaces\KeyValidatorInterface;
 
 class KeyValidator implements KeyValidatorInterface
@@ -34,12 +34,14 @@ class KeyValidator implements KeyValidatorInterface
     }
 
     /**
-     * @param SecretKey $key
-     * @param string $validationKey
-     * @return bool
+     * @param string $owner
+     * @param string $key
+     * @throws KeyAttemptsLimitException
+     * @throws KeyValidationException
      */
-    public function validate(SecretKey $key, string $validationKey): bool
+    public function validate(string $owner, string $key): void
     {
+        $storedKey =
         $lifetime = time() - $key->getCreatedAt()->getTimestamp();
 
         if ($lifetime >= $this->maxLifetime) {
@@ -47,7 +49,7 @@ class KeyValidator implements KeyValidatorInterface
         }
 
         if ($key->getAttempts() >= $this->maxAttempts) {
-            throw new ValidationMaxAttemptsException();
+            throw new KeyAttemptsLimitException();
         }
 
         if ($key->getKey() !== $validationKey) {

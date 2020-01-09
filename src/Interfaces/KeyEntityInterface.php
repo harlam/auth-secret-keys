@@ -4,13 +4,12 @@ namespace harlam\Security\Auth\Entity;
 
 use DateTime;
 
+/**
+ * Interface KeyEntityInterface
+ * @package harlam\Security\Auth\Entity
+ */
 interface KeyEntityInterface
 {
-    /**
-     * @return string|null
-     */
-    public function getUid(): ?string;
-
     /**
      * @return string
      */
@@ -25,6 +24,12 @@ interface KeyEntityInterface
      * @return int
      */
     public function getAttempts(): int;
+
+    /**
+     * @param int $count
+     * @return KeyEntityInterface
+     */
+    public function incAttempts(int $count = 1): KeyEntityInterface;
 
     /**
      * @return DateTime

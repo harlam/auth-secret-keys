@@ -2,7 +2,7 @@
 
 namespace harlam\Security\Auth\Interfaces;
 
-use harlam\Security\Auth\Entity\SecretKey;
+use harlam\Security\Auth\Exceptions\KeyValidationException;
 
 /**
  * Interface KeyValidatorInterface
@@ -11,9 +11,9 @@ use harlam\Security\Auth\Entity\SecretKey;
 interface KeyValidatorInterface
 {
     /**
-     * @param SecretKey $key
-     * @param string $validationKey
-     * @return bool
+     * @param string $owner
+     * @param string $key
+     * @throws KeyValidationException
      */
-    public function validate(SecretKey $key, string $validationKey): bool;
+    public function validate(string $owner, string $key): void;
 }

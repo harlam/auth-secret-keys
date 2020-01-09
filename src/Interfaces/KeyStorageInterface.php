@@ -2,7 +2,8 @@
 
 namespace harlam\Security\Auth\Interfaces;
 
-use harlam\Security\Auth\Entity\SecretKey;
+use harlam\Security\Auth\Entity\KeyEntityInterface;
+use harlam\Security\Auth\Exceptions\StorageException;
 
 /**
  * Interface KeyStorageInterface
@@ -11,30 +12,22 @@ use harlam\Security\Auth\Entity\SecretKey;
 interface KeyStorageInterface
 {
     /**
-     * @param mixed $uid
-     * @return SecretKey|null
+     * @param KeyEntityInterface $entity
+     * @return KeyEntityInterface
+     * @throws StorageException
      */
-    public function find($uid): ?SecretKey;
+    public function create(KeyEntityInterface $entity): KeyEntityInterface;
 
     /**
-     * @param SecretKey $code
-     * @return SecretKey
+     * @param KeyEntityInterface $entity
+     * @return KeyEntityInterface
+     * @throws StorageException
      */
-    public function create(SecretKey $code): SecretKey;
-
-    /**
-     * @param mixed $uid
-     */
-    public function delete($uid): void;
-
-    /**
-     * @param SecretKey $key
-     */
-    public function update(SecretKey $key): void;
+    public function update(KeyEntityInterface $entity): KeyEntityInterface;
 
     /**
      * @param string $owner
-     * @return SecretKey|null
+     * @return KeyEntityInterface|null
      */
-    public function getLast(string $owner): ?SecretKey;
+    public function getLastKey(string $owner): ?KeyEntityInterface;
 }
