@@ -47,8 +47,7 @@ class KeysStorage implements StorageInterface
             throw new StorageException();
         }
 
-        return $entity->setUid($uid)
-            ->setCreatedAt($created);
+        return $entity;
     }
 
     /**
