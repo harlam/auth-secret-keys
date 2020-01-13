@@ -1,8 +1,8 @@
 <?php
 
-namespace harlam\Security\Auth\Exceptions;
+namespace harlam\Auth\Secrets\Exception;
 
-class StorageException extends CoreException
+class StorageException extends BaseException
 {
 
 }
