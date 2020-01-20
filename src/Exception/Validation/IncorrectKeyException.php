@@ -2,7 +2,7 @@
 
 namespace harlam\Auth\Secrets\Exception\Validation;
 
-class FindKeyException extends KeyValidationBaseException
+class IncorrectKeyException extends KeyValidationBaseException
 {
 
 }

@@ -6,17 +6,21 @@ use DateTime;
 use harlam\Auth\Secrets\Entity\KeyEntity;
 use harlam\Auth\Secrets\Exception\StorageException;
 use harlam\Auth\Secrets\Interfaces\StorageInterface;
-use PDO;
-use Ramsey\Uuid\Uuid;
 
-
+/**
+ * @package harlam\Auth\Secrets
+ */
 class KeysStorage implements StorageInterface
 {
-    private $connection;
+    private $path;
 
-    public function __construct(PDO $connection)
+    public function __construct(string $path)
     {
-        $this->connection = $connection;
+        if ((!is_dir($path) && !mkdir($path, 0700, true)) || !is_string(($p = realpath($path)))) {
+            throw new StorageException("Storage initialization error in '{$this->path}'");
+        }
+
+        $this->path = $p . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -26,37 +30,23 @@ class KeysStorage implements StorageInterface
      */
     public function create(KeyEntity $entity): KeyEntity
     {
-        $entity->setUid(Uuid::uuid4()->toString());
-
-        if ($entity->getCreatedAt() === null) {
-            $entity->setCreatedAt(new DateTime());
+        if ($entity->getOwner() === null || $entity->getKey() === null) {
+            throw new StorageException('Owner and Key is required');
         }
 
-        $query = 'INSERT INTO secret_keys(uid, owner, key, attempts, created_at) VALUES (:uid, :owner, :key, :attempts, :created)';
-        $statement = $this->connection->prepare($query);
+        $file = $this->path . $entity->getOwner();
 
-        $isSaved = $statement->execute([
-            'uid' => $entity->getUid(),
-            'owner' => $entity->getOwner(),
+        $saved = file_put_contents($file, json_encode([
             'key' => $entity->getKey(),
             'attempts' => $entity->getAttempts(),
             'created' => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
-        ]);
+        ]));
 
-        if (false === $isSaved) {
-            throw new StorageException();
+        if (!$saved) {
+            throw new StorageException("Can't save key for owner '{$entity->getOwner()}'");
         }
 
         return $entity;
-    }
-
-    /**
-     * @param $uid
-     * @return KeyEntity|null
-     */
-    public function find($uid): ?KeyEntity
-    {
-        // TODO: Implement find() method.
     }
 
     /**
@@ -66,7 +56,7 @@ class KeysStorage implements StorageInterface
      */
     public function update(KeyEntity $entity): KeyEntity
     {
-        // TODO: Implement update() method.
+        return $this->create($entity);
     }
 
     /**
@@ -76,7 +66,7 @@ class KeysStorage implements StorageInterface
      */
     public function getLastKey(string $owner): ?KeyEntity
     {
-        $file = $this->path . DIRECTORY_SEPARATOR . $owner;
+        $file = $this->path . $owner;
 
         if (!file_exists($file)) {
             return null;
@@ -88,7 +78,10 @@ class KeysStorage implements StorageInterface
             throw new StorageException();
         }
 
-        $createdAt = DateTime::createFromFormat('Y-m-d H:i:s', $json->created);
-        return new KeyEntity($json->owner, $json->key, $json->attempts, $createdAt);
+        return (new KeyEntity)
+            ->setOwner($owner)
+            ->setKey($json->key)
+            ->setAttempts((int)$json->attempts)
+            ->setCreatedAt(DateTime::createFromFormat('Y-m-d H:i:s', $json->created));
     }
 }

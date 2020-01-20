@@ -7,7 +7,7 @@ use harlam\Auth\Secrets\Exception\StorageException;
 
 /**
  * Interface StorageInterface
- * @package harlam\Security\Auth\Interfaces
+ * @package harlam\Auth\Secrets\Interfaces
  */
 interface StorageInterface
 {
@@ -17,12 +17,6 @@ interface StorageInterface
      * @throws StorageException
      */
     public function create(KeyEntity $entity): KeyEntity;
-
-    /**
-     * @param $uid
-     * @return KeyEntity|null
-     */
-    public function find($uid): ?KeyEntity;
 
     /**
      * @param KeyEntity $entity

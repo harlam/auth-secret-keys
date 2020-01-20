@@ -19,8 +19,13 @@ class KeyEntity
     /** @var DateTime Date/Time */
     private $createdAt;
 
+    public function __construct()
+    {
+        $this->createdAt = new DateTime;
+    }
+
     /**
-     * @param $uid
+     * @param mixed $uid
      * @return KeyEntity
      */
     public function setUid($uid): KeyEntity
@@ -60,6 +65,16 @@ class KeyEntity
     }
 
     /**
+     * @param int $attempts
+     * @return KeyEntity
+     */
+    public function setAttempts(int $attempts): KeyEntity
+    {
+        $this->attempts = $attempts;
+        return $this;
+    }
+
+    /**
      * @param DateTime $createdAt
      * @return KeyEntity
      */
@@ -69,13 +84,16 @@ class KeyEntity
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getUid()
     {
         return $this->uid;
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getOwner(): ?string
     {
@@ -99,9 +117,9 @@ class KeyEntity
     }
 
     /**
-     * @return DateTime|null
+     * @return DateTime
      */
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }

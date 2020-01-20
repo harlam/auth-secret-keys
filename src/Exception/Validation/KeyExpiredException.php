@@ -1,6 +1,6 @@
 <?php
 
-namespace harlam\Security\Auth\Exceptions\Validation;
+namespace harlam\Auth\Secrets\Exception\Validation;
 
 class KeyExpiredException extends KeyValidationBaseException
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace harlam\Security\Auth\Exceptions\Validation;
+namespace harlam\Auth\Secrets\Exception\Validation;
 
 use harlam\Auth\Secrets\Exception\BaseException;
 

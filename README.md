@@ -1,20 +1,30 @@
 Usage:
 
 ```php
-/** Initialize service */
-$generator = new KeyGenerator();
-$validator = new KeyValidator();
-$storage = new FSKeyStorage('/tmp/keys-storage');
+/** Initialize keys storage */
+$keysStorage = new KeysStorage('/tmp/storage/secret-keys');
 
-$service = new SecretKeysService($generator, $validator, $storage);
-/* Secret keys request interval (in seconds) */
-$service->setRequestInterval(5); /* if not set - disabled */
+$keysManager = new KeysManager($keysStorage, new BaseGenerator());
+
+/* Validation max attempts (default 3) */
+$keysManager->setValidationMaxAttempts(5);
+
+/* Secret key lifetime (default 300 sec.) */
+$keysManager->setValidationMaxLifetime(300);
+
+/* Secret key generation request interval (default 60 sec.) */
+$keysManager->setRequestInterval(15);
+
+/* Static keys (default empty) */
+$keysManager->setPresetKeys(['owner' => 'static-secret']);
 
 /** Generate secret key with owner */
-$key = $service->create('owner_name');
+$key = $keysManager->generate('owner');
 
-/** Validate secret key */
-$isValid = $service->validate('owner_name', 123456);
-print_r('Is valid: ' . ($isValid === true ? 'Yes' : 'No'));
+/** Or validate secret key */
+$key = (new KeyEntity)
+    ->setOwner('owner')
+    ->setKey('secret');
 
+$keysManager->validate($key);
 ```

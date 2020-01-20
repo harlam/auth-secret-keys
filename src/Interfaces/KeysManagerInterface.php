@@ -3,12 +3,12 @@
 namespace harlam\Auth\Secrets\Interfaces;
 
 use harlam\Auth\Secrets\Entity\KeyEntity;
-use harlam\Auth\Secrets\Exception\StorageException;
 use harlam\Auth\Secrets\Exception\Generation\KeyGenerationBaseException;
-use harlam\Security\Auth\Exceptions\Validation\KeyValidationBaseException;
+use harlam\Auth\Secrets\Exception\StorageException;
+use harlam\Auth\Secrets\Exception\Validation\KeyValidationBaseException;
 
 /**
- * @package harlam\Security\Auth\Interfaces
+ * @package harlam\Auth\Secrets\Interfaces
  */
 interface KeysManagerInterface
 {

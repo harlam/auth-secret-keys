@@ -2,21 +2,20 @@
 
 namespace harlam\Auth\Secrets;
 
-use DateTime;
 use harlam\Auth\Secrets\Entity\KeyEntity;
 use harlam\Auth\Secrets\Exception\Generation\TooManyRequests;
+use harlam\Auth\Secrets\Exception\Validation\BadKeyException;
+use harlam\Auth\Secrets\Exception\Validation\FindKeyException;
+use harlam\Auth\Secrets\Exception\Validation\IncorrectKeyException;
+use harlam\Auth\Secrets\Exception\Validation\KeyAttemptsLimitException;
+use harlam\Auth\Secrets\Exception\Validation\KeyExpiredException;
+use harlam\Auth\Secrets\Exception\Validation\KeyValidationBaseException;
 use harlam\Auth\Secrets\Interfaces\KeysManagerInterface;
 use harlam\Auth\Secrets\Interfaces\StorageInterface;
 use harlam\Auth\Secrets\Interfaces\StringGeneratorInterface;
-use harlam\Security\Auth\Exceptions\Validation\BadKeyException;
-use harlam\Security\Auth\Exceptions\Validation\FindKeyException;
-use harlam\Security\Auth\Exceptions\Validation\KeyAttemptsLimitException;
-use harlam\Security\Auth\Exceptions\Validation\KeyExpiredException;
-use harlam\Security\Auth\Exceptions\Validation\KeyValidationBaseException;
-
 
 /**
- * @package harlam\Security\Auth\Service
+ * @package harlam\Auth\Secrets
  */
 class KeysManager implements KeysManagerInterface
 {
@@ -84,10 +83,9 @@ class KeysManager implements KeysManagerInterface
 
         $key = key_exists($owner, $this->presetKeys) ? (string)$this->presetKeys[$owner] : $this->stringGenerator->generate();
 
-        $entity = (new KeyEntity())
+        $entity = (new KeyEntity)
             ->setOwner($owner)
-            ->setKey($key)
-            ->setCreatedAt(new DateTime());
+            ->setKey($key);
 
         return $this->storage->create($entity);
     }
@@ -98,25 +96,21 @@ class KeysManager implements KeysManagerInterface
      */
     public function validate(KeyEntity $key): void
     {
-        if ($key->getOwner() || $key->getCreatedAt() === null) {
-            throw new BadKeyException();
-        }
-
-        $keyLifetime = time() - $key->getCreatedAt()->getTimestamp();
-
-        if ($keyLifetime >= $this->maxLifetime) {
-            throw new KeyExpiredException();
+        if ($key->getOwner() === null) {
+            throw new BadKeyException('Owner is required');
         }
 
         $storedKey = $this->storage->getLastKey($key->getOwner());
 
         if ($storedKey === null) {
             throw new FindKeyException();
+        } elseif (($key->getCreatedAt()->getTimestamp() - $storedKey->getCreatedAt()->getTimestamp()) > $this->maxLifetime) {
+            throw new KeyExpiredException();
         } elseif ($storedKey->getAttempts() >= $this->maxAttempts) {
             throw new KeyAttemptsLimitException();
-        } elseif ($storedKey->getKey() !== $key->getKey()) {
+        } elseif ($key->getKey() !== $storedKey->getKey()) {
             $this->storage->update($storedKey->incAttempts());
-            throw new KeyValidationBaseException();
+            throw new IncorrectKeyException();
         }
     }
 
